@@ -32,18 +32,21 @@
    fileName = e.target.value.split( '\\' ).pop();
    this.setState({
     labelValue : fileName + ' selected',
-    data_uri : e.target.result
+    file : e.target.files[0]
   });
    this.uploadFile();
 
  },
 
  uploadFile: function(){
+  console.log(this.state.file);
+
+  var data = new FormData();
+  data.append( 'file', this.state.file );
 
   var request = new XMLHttpRequest();
-  request.open('POST', '/my/url', true);
-  request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-  request.send(this.state.data_uri);
+  request.open('POST', 'file-upload.php', true);
+  request.send(data);
 
 },
 
