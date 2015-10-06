@@ -6,25 +6,46 @@ module.exports = function(grunt) {
 			all:['assets/js/*.js']
 		},
 
-	
+
 		watch: {
+			styles: {
+				files: ['assets/less/*.less'], 
+				tasks: ['less'],
+				options: {
+					nospawn: true,
+					reload: true,
+					livereload: {
+						port: 1337
+					}
+				}
+			},	
+
+			html: {
+				files: ['*.html'], 
+				options: {
+					reload: true,
+					livereload: {
+						port: 1337
+					}
+				}
+			},
+
 			js: {
-		        files: ['assets/js/*.js'], // which files to watch
-		        options: {
-		        	reload: true,
-		        	livereload: {
-		        		port: 1337
-		        	}
-		        }
-		    },
+				files: ['assets/js/*.js'], 
+				options: {
+					reload: true,
+					livereload: {
+						port: 1337
+					}
+				}
+			},
 		},
 
 		less: {
 			development: {
 				
 				files: {
-					// "player/assets/css/player.css": "player/assets/less/player.less",
-					// "player/assets/css/frameless.css": "player/assets/less/frameless.less"
+					"assets/css/img-srch.css": "assets/less/img-srch.less",
 				}
 			},
 

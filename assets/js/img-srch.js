@@ -32,7 +32,7 @@
   render: function() {
     return ( 
       <div className="select-box">
-      <input type="file" name="file" id="file" class="select-box--inputfile" />
+      <input type="file" name="file" id="file" className="select-box--inputfile" />
       <label for="file">Choose a file</label> 
       </div>
       );
