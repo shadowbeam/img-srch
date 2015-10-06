@@ -3,36 +3,19 @@ module.exports = function(grunt) {
 
 	grunt.initConfig({
 		lint: {
-			all:['js/*.js']
+			all:['assets/js/*.js']
 		},
 
-		connect: {
-			server: {
-				options: {
-					livereload: true,
-					port: 9000
-				}
-			}
-		},
-
-
+	
 		watch: {
-			styles: {
-		        // files: ['player/assets/less/*.less'], // which files to watch
-		        // tasks: ['less'],
-		        // options: {
-		        // 	nospawn: true
-		        // }
-		    },
-
-		    html: {
-		    	// files: [ 'jukebox/*', 'player/*'],
-		    	// options: {
-		    	// 	reload: true,
-		    	// 	livereload: {
-		    	// 		port: 35729
-		    	// 	}
-		    	// }
+			js: {
+		        files: ['assets/js/*.js'], // which files to watch
+		        options: {
+		        	reload: true,
+		        	livereload: {
+		        		port: 1337
+		        	}
+		        }
 		    },
 		},
 
@@ -51,14 +34,12 @@ module.exports = function(grunt) {
 
 
 	grunt.registerTask('serve', [
-		'connect:server',
 		'watch'
 		]);
 
 
 	grunt.registerTask('default', 'serve');
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-less');
 
 

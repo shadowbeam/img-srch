@@ -11,11 +11,35 @@
     },
 
     render: function() {
-      return ( <button>Search</button> );
+      return ( 
+        <SelectBox/>
+        );
     }
 
   });
 
+
+  var SelectBox = React.createClass({
+
+   componentDidMount: function() {
+
+   },
+
+   getInitialState: function(){
+    return{};
+  },
+
+  render: function() {
+    return ( 
+      <div className="select-box">
+      <input type="file" name="file" id="file" class="select-box--inputfile" />
+      <label for="file">Choose a file</label> 
+      </div>
+      );
+  }
+
+
+});
 
   React.render(
     <ImgSrch/>,
