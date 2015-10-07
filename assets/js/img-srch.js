@@ -23,7 +23,7 @@
    getInitialState: function(){
     return{
       labelValue: "Choose a file",
-      data_uri: null
+      imgUrl : ""
 
     };
   },
@@ -38,16 +38,23 @@
 
  },
 
- uploadFile: function(){
-  console.log(this.state.file);
+ handleUploadStateChange : function(status){
 
+  if( status.target.readyState == 4 && status.target.status == 200){
+    console.log("File Uploaded" + status.target.responseText);
+    this.setState({imgUrl : status.target.responseText});
+  } 
+},
+
+uploadFile: function(){
   var data = new FormData();
   data.append( 'file', this.state.file );
 
   var request = new XMLHttpRequest();
   request.open('POST', 'file-upload.php', true);
-  request.send(data);
+  request.onreadystatechange = this.handleUploadStateChange;
 
+  request.send(data);
 },
 
 
@@ -55,7 +62,8 @@ render: function() {
   return ( 
     <div className="select-box">
     <input type="file" name="file" id="file" className="select-box--inputfile" onChange={this.handleFileDrop} />
-    <label htmlFor="file">{this.state.labelValue}</label> 
+    <label htmlFor="file">{this.state.labelValue}</label>
+    <img src={this.state.imgUrl}/>
     </div>
     );
 }

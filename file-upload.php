@@ -27,15 +27,19 @@ if (!empty($_FILES["file"])) {
 
 	if (!$success) { 
 		echo "<p>Unable to save file.</p>";
+		http_response_code(500);
 		exit;
 	}else{
-		echo "Success";
+		$host = $_SERVER['HTTP_HOST'];
+		$path = dirname($_SERVER['PHP_SELF']);
+
+		echo " http://" . $host . $path . "/" . UPLOAD_DIR . $name;
 	}
 
     // set proper permissions on the new file
 	chmod(UPLOAD_DIR . $name, 0644);
 }else{
 	echo "No files provided";
-
+	http_response_code(500);
 }
 ?>
