@@ -6,13 +6,20 @@
 
     getInitialState: function(){
       return {
-        searched: false
+        imgUrl: "http://www.w3schools.com/images/w3schools.png"
       };
+    },
+
+    updateUrl: function(url){
+      this.setState({imgUrl : url});
     },
 
     render: function() {
       return ( 
-        <SelectBox/>
+        <div className="img-srch">
+        <SelectBox updateUrl={this.updateUrl}/>
+        <GooglePane imgUrl={this.state.imgUrl}/>
+        </div>
         );
     }
 
@@ -23,32 +30,28 @@
    getInitialState: function(){
     return{
       labelValue: "Choose a file",
-      imgUrl : ""
-
+      file: null
     };
   },
 
   handleFileDrop: function(e){
    fileName = e.target.value.split( '\\' ).pop();
    this.setState({
-    labelValue : fileName + ' selected',
-    file : e.target.files[0]
+    labelValue : fileName + ' selected'
   });
-   this.uploadFile();
+   this.uploadFile(e.target.files[0]);
 
  },
 
  handleUploadStateChange : function(status){
-
   if( status.target.readyState == 4 && status.target.status == 200){
-    console.log("File Uploaded" + status.target.responseText);
-    this.setState({imgUrl : status.target.responseText});
+    this.props.updateUrl(status.target.responseText);
   } 
 },
 
-uploadFile: function(){
+uploadFile: function(file){
   var data = new FormData();
-  data.append( 'file', this.state.file );
+  data.append('file', file);
 
   var request = new XMLHttpRequest();
   request.open('POST', 'file-upload.php', true);
@@ -69,6 +72,61 @@ render: function() {
 }
 
 });
+
+
+
+  var GooglePane = React.createClass({
+
+    // var _getData = this.getData;
+
+    getInitialState: function(){
+      return{
+        frameHtml: ""
+      };
+    },
+
+    handleStatusChange: function (status) {
+
+      if( status.target.readyState == 4 && status.target.status == 200){
+        var data = JSON.parse(status.target.responseText);
+        if (data.query.results.resources.content && data.query.results.resources.status == 200) {
+          this.setState({frameHtml: data.query.results.resources.content})
+        }
+        else if (data && data.error && data.error.description) {
+          this.setState({frameHtml: data.error.description})
+        }
+        else{ 
+          this.setState({frameHtml: "Error: Cannot load "})
+        }
+      }
+    },
+
+    loadURL: function (url) {
+
+      var query = 'http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20data.headers%20where%20url%3D%22' + encodeURIComponent("https://www.google.com/search?tbm=isch&q=" + url) + '%22&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys';
+
+      var request = new XMLHttpRequest();
+      request.open('GET', query, true);
+      request.onreadystatechange = this.handleStatusChange;
+
+      request.send();
+    },
+
+
+    componentWillReceiveProps: function(){
+      console.log("parent props updates" + this.props.imgUrl);
+      this.loadURL(this.props.imgUrl);
+    },
+
+    render: function() {
+      return ( 
+        <div className="google-pane">
+        <iframe src = {'data:text/html;charset=utf-8,' + encodeURI(this.state.frameHtml)} sandbox="allow-same-origin allow-scripts"></iframe>
+        </div>
+        );
+    }
+
+  });
 
   React.render(
     <ImgSrch/>,

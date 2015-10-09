@@ -20,3 +20,7 @@
 .select-box--inputfile + label:hover {
   background-color: red;
 }
+.google-pane iframe {
+  width: 100%;
+  max-width: 100%;
+}

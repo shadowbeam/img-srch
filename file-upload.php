@@ -41,5 +41,6 @@ if (!empty($_FILES["file"])) {
 }else{
 	echo "No files provided";
 	http_response_code(500);
+	header('HTTP/1.1 401 Unauthorized', true, 500);
 }
 ?>
