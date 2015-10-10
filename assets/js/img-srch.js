@@ -66,7 +66,6 @@ render: function() {
     <div className="select-box">
     <input type="file" name="file" id="file" className="select-box--inputfile" onChange={this.handleFileDrop} />
     <label htmlFor="file">{this.state.labelValue}</label>
-    <img src={this.state.imgUrl}/>
     </div>
     );
 }
