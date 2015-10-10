@@ -6,20 +6,32 @@
 
     getInitialState: function(){
       return {
-        imgUrl: "http://www.w3schools.com/images/w3schools.png"
+        imgUrl: 'http://www.w3schools.com/images/w3schools.png',
+        searching: false,
+        searched: false
       };
     },
 
     updateUrl: function(url){
-      this.setState({imgUrl : url});
+      this.setState({
+        imgUrl : url
+      });
+    },
+
+    searching: function(){
+      this.setState({searching : true, searched: true});
+    },
+
+    finished: function(){
+     this.setState({searching : false});
     },
 
     render: function() {
       return ( 
-        <div className="img-srch">
-        <SelectBox updateUrl={this.updateUrl}/>
-        <GooglePane imgUrl={this.state.imgUrl}/>
-        <Spinner/>
+        <div className={this.state.searching ? 'img-srch searching' : 'img-srch'}>
+        <SelectBox searched={this.state.searched} updateUrl={this.updateUrl} searching={this.searching}/>
+        <GooglePane imgUrl={this.state.imgUrl} finished={this.finished}/>
+        <Spinner />
         </div>
         );
     }
@@ -30,9 +42,9 @@
 
       render: function(){
         return(
-          <div className="spinner double-bounce">
-            <div className="double-bounce1"></div>
-            <div className="double-bounce2"></div>
+          <div className='spinner double-bounce'>
+            <div className='double-bounce1'></div>
+            <div className='double-bounce2'></div>
           </div>
         );
       }
@@ -42,12 +54,13 @@
   var SelectBox = React.createClass({
    getInitialState: function(){
     return{
-      labelValue: "Choose a file",
+      labelValue: 'Choose a file',
       file: null
     };
   },
 
   handleFileDrop: function(e){
+    this.props.searching();
    fileName = e.target.value.split( '\\' ).pop();
    this.setState({
     labelValue : fileName + ' selected'
@@ -76,9 +89,9 @@ uploadFile: function(file){
 
 render: function() {
   return ( 
-    <div className="select-box">
-    <input type="file" name="file" id="file" className="select-box--inputfile" onChange={this.handleFileDrop} />
-    <label htmlFor="file">{this.state.labelValue}</label>
+    <div className={this.props.searched ? 'select-box searched' : 'select-box'} >
+    <input type='file' name='file' id='file' className='select-box--inputfile' onChange={this.handleFileDrop} />
+    <label htmlFor='file'>{this.state.labelValue}</label>
     </div>
     );
 }
@@ -91,7 +104,7 @@ render: function() {
 
     getInitialState: function(){
       return{
-        frameHtml: ""
+        frameHtml: ''
       };
     },
 
@@ -106,14 +119,16 @@ render: function() {
           this.setState({frameHtml: data.error.description})
         }
         else{ 
-          this.setState({frameHtml: "Error: Cannot load "})
+          this.setState({frameHtml: 'Error: Cannot load '})
         }
+
+        this.props.finished();
       }
     },
 
     loadURL: function (url) {
 
-      var query = 'http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20data.headers%20where%20url%3D%22' + encodeURIComponent("https://www.google.com/search?tbm=isch&q=" + url) + '%22&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys';
+      var query = 'http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20data.headers%20where%20url%3D%22' + encodeURIComponent('https://www.google.com/search?tbm=isch&q=' + url) + '%22&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys';
 
       var request = new XMLHttpRequest();
       request.open('GET', query, true);
@@ -124,14 +139,14 @@ render: function() {
 
 
     componentWillReceiveProps: function(){
-      console.log("parent props updates" + this.props.imgUrl);
+      console.log('parent props updates' + this.props.imgUrl);
       this.loadURL(this.props.imgUrl);
     },
 
     render: function() {
       return ( 
-        <div className="google-pane">
-        <iframe src = {'data:text/html;charset=utf-8,' + encodeURI(this.state.frameHtml)} sandbox="allow-same-origin allow-scripts"></iframe>
+        <div className='google-pane'>
+        <iframe src = {'data:text/html;charset=utf-8,' + encodeURI(this.state.frameHtml)} sandbox='allow-same-origin allow-scripts'></iframe>
         </div>
         );
     }

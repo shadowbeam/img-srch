@@ -42,7 +42,11 @@ label{
   position: relative;
   top: 50%;
   transform: translateY(-50%);
+
+
+    -webkit-transition: top 0.3s ease-in-out;
 }
+
 
 .img-srch{
   height: 100%;
@@ -95,5 +99,17 @@ label{
   transform: translateY(-50%);  
   left: 50%;
   transform: translateX(-50%);
+  display: none;
 
+}
+
+.select-box.searched{
+  top: 100%;
+    transform: translateY(-100%);
+
+}
+
+
+.searching .spinner {
+  display: inherit;
 }
