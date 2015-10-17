@@ -128,7 +128,8 @@ render: function() {
 
     loadURL: function (url) {
 
-      var query = 'http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20data.headers%20where%20url%3D%22' + encodeURIComponent('https://www.google.com/search?tbm=isch&q=' + url) + '%22&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys';
+      var searchUrl = 'https://images.google.com/searchbyimage?image_content=&filename=&hl=en&image_url=';
+      var query = 'http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20data.headers%20where%20url%3D%22' + encodeURIComponent(searchUrl + url) + '%22&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys';
 
       var request = new XMLHttpRequest();
       request.open('GET', query, true);
