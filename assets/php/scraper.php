@@ -3,7 +3,7 @@
 include('simple_html_dom.php');
 
 if($_SERVER['REQUEST_METHOD'] != "GET"){
-    error();
+    error("Get requests only");
 }
 
 
@@ -40,21 +40,32 @@ function scrape_url($url){
     $results =  get_full_result_block($html);
     $results = array_reverse($results);
 
+
+
+    if(count($results) == 0){
+        echo json_encode (new stdClass);
+        exit;
+    }
+
     $response = array();
 
     foreach($results as $e) {
+
       $result = new stdClass();
 
+
       $link = $e->find('h3 a', 0);
-      $result->title = $link->innertext;
-      $result->url = $link->href;
-      $result->cite = $e->find('cite', 0)->innertext;
-      $result->description = $e->find('span.st', 0)->innertext;
+      $result->title = utf8_encode($link->innertext);
+      $result->url = utf8_encode($link->href);
+      $result->cite = utf8_encode($e->find('cite', 0)->innertext);
+      $result->description = utf8_encode($e->find('span.st', 0)->innertext);
 
       array_push($response, $result);
   }
 
+
   header('Content-Type: application/json');
+
   echo json_encode($response);
 }
 

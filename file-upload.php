@@ -33,7 +33,8 @@ if (!empty($_FILES["file"])) {
 		$host = $_SERVER['HTTP_HOST'];
 		$path = dirname($_SERVER['PHP_SELF']);
 
-		echo " http://" . $host . $path . "/" . UPLOAD_DIR . $name;
+		// echo "http://" . $host . $path . "/" . UPLOAD_DIR . $name;
+		echo "http://dumbainfarm.co.uk/data/uploads/index-btm.jpg";
 	}
 
     // set proper permissions on the new file

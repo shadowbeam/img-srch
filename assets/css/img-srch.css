@@ -24,8 +24,26 @@
   width: 100%;
   max-width: 100%;
 }
-body {
+body,
+html {
   font-family: 'Lato', sans-serif;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+label {
+  width: 100%;
+  padding: 20px 0;
+  text-align: center;
+}
+.select-box {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  -webkit-transition: top 0.3s ease-in-out;
+}
+.img-srch {
+  height: 100%;
 }
 .double-bounce {
   width: 27px;
@@ -68,4 +86,19 @@ body {
     transform: scale(1);
     -webkit-transform: scale(1);
   }
+}
+.spinner {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+}
+.select-box.searched {
+  top: 100%;
+  transform: translateY(-100%);
+}
+.searching .spinner {
+  display: inherit;
 }
