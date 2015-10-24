@@ -6,7 +6,7 @@ var ImgSrch = React.createClass({
 
     getInitialState: function(){
         return {
-            imgUrl: 'http://www.w3schools.com/images/w3schools.png',
+            imgUrl: '',
             searching: false,
             searched: false,
         };
@@ -30,7 +30,6 @@ var ImgSrch = React.createClass({
     render: function() {
         return <div className={this.state.searching ? 'img-srch searching' : 'img-srch'}>
         <SelectBox searched={this.state.searched} updateUrl={this.updateUrl} searching={this.searching}/>
-    
         <GooglePane imgUrl={this.state.imgUrl} finished={this.finished}/>
         <Spinner />
         </div>;
@@ -118,8 +117,6 @@ var GooglePane = React.createClass({
 
     componentDidUpdate: function(prevProps, prevState){
         if(prevProps.imgUrl != this.props.imgUrl){
-            console.log('parent props updates' + this.props.imgUrl);
-
             this.loadURL(this.props.imgUrl);
         }
     },
@@ -129,12 +126,24 @@ var GooglePane = React.createClass({
             return <ImageResult title={img.title} image={img} description={img.description} cite={img.cite} url={img.url}/>;
         });
 
-        return <div className="google-pane">
+        return <div className='google-pane'>
+        <ImagePreview imgUrl={this.props.imgUrl}/>
+        <div className='image-results'>
         {images}
+        </div>
         </div>;
 
     }
 
+});
+
+var ImagePreview = React.createClass({
+
+    render: function(){
+        return  <div className='image-preview'>
+        <img className='target-image' src={this.props.imgUrl}/>
+        </div>;
+    }
 });
 
 var ImageResult = React.createClass({

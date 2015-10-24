@@ -111,3 +111,24 @@ label {
   overflow: scroll;
   padding: 0 25px;
 }
+.google-pane .image-result h2 {
+  font-size: 1.25rem;
+}
+.google-pane .image-result h3 {
+  font-size: 1rem;
+  max-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.google-pane .target-image {
+  max-width: 100%;
+  max-height: 100px;
+}
+h2,
+h3 {
+  margin: 0.5rem 0;
+}
+p {
+  margin-top: 0;
+}
