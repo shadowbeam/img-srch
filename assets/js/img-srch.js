@@ -30,6 +30,7 @@ var ImgSrch = React.createClass({
     render: function() {
         return <div className={this.state.searching ? 'img-srch searching' : 'img-srch'}>
         <SelectBox searched={this.state.searched} updateUrl={this.updateUrl} searching={this.searching}/>
+    
         <GooglePane imgUrl={this.state.imgUrl} finished={this.finished}/>
         <Spinner />
         </div>;

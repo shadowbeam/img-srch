@@ -1,3 +1,6 @@
+@select-box-height: 65px;
+@padding: 25px;
+
 .select-box--inputfile {
   width: 0.1px;
   height: 0.1px;
@@ -39,17 +42,18 @@ label{
 }
 
 .select-box {
-  position: relative;
+  position: absolute;
+  width: 100%;
   top: 50%;
+  height: @select-box-height;
   transform: translateY(-50%);
-
-
-    -webkit-transition: top 0.3s ease-in-out;
+  -webkit-transition: top 0.3s ease-in-out;
 }
 
 
 .img-srch{
   height: 100%;
+  overflow: hidden;
 }
 
 .double-bounce {
@@ -87,29 +91,35 @@ label{
   0%, 100% {
     transform: scale(0.0);
     -webkit-transform: scale(0.0);
-  } 50% {
-    transform: scale(1.0);
-    -webkit-transform: scale(1.0);
+    } 50% {
+      transform: scale(1.0);
+      -webkit-transform: scale(1.0);
+    }
   }
-}
 
-.spinner{
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);  
-  left: 50%;
-  transform: translateX(-50%);
-  display: none;
+  .spinner{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);  
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
 
-}
+  }
 
-.select-box.searched{
-  top: 100%;
+  .select-box.searched{
+    top: 100%;
     transform: translateY(-100%);
 
-}
+  }
 
+  .searching .spinner {
+    display: inherit;
+  }
 
-.searching .spinner {
-  display: inherit;
-}
+  .google-pane{
+    height: calc(~"100vh - " (@select-box-height));
+    top: 0;
+    overflow: scroll;
+    padding: 0 @padding;
+  }

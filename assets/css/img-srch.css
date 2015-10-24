@@ -37,13 +37,16 @@ label {
   text-align: center;
 }
 .select-box {
-  position: relative;
+  position: absolute;
+  width: 100%;
   top: 50%;
+  height: 65px;
   transform: translateY(-50%);
   -webkit-transition: top 0.3s ease-in-out;
 }
 .img-srch {
   height: 100%;
+  overflow: hidden;
 }
 .double-bounce {
   width: 27px;
@@ -101,4 +104,10 @@ label {
 }
 .searching .spinner {
   display: inherit;
+}
+.google-pane {
+  height: calc(100vh -  65px);
+  top: 0;
+  overflow: scroll;
+  padding: 0 25px;
 }
