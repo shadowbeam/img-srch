@@ -28,13 +28,11 @@
    },
 
    render: function() {
-    return ( 
-      <div className={this.state.searching ? 'img-srch searching' : 'img-srch'}>
-      <SelectBox searched={this.state.searched} updateUrl={this.updateUrl} searching={this.searching}/>
-      <GooglePane imgUrl={this.state.imgUrl} finished={this.finished}/>
-      <Spinner />
-      </div>
-      );
+    return <div className={this.state.searching ? 'img-srch searching' : 'img-srch'}>
+    <SelectBox searched={this.state.searched} updateUrl={this.updateUrl} searching={this.searching}/>
+    <GooglePane imgUrl={this.state.imgUrl} finished={this.finished}/>
+    <Spinner />
+    </div>;
   }
 
 });
@@ -42,12 +40,10 @@
   var Spinner = React.createClass({
 
     render: function(){
-      return(
-        <div className='spinner double-bounce'>
-        <div className='double-bounce1'></div>
-        <div className='double-bounce2'></div>
-        </div>
-        );
+      return <div className='spinner double-bounce'>
+      <div className='double-bounce1'></div>
+      <div className='double-bounce2'></div>
+      </div>;
     }
   });
 
@@ -89,12 +85,10 @@
 
 
   render: function() {
-    return ( 
-      <div className={this.props.searched ? 'select-box searched' : 'select-box'} >
-      <input type='file' name='file' id='file' className='select-box--inputfile' onChange={this.handleFileDrop} />
-      <label htmlFor='file'>{this.state.labelValue}</label>
-      </div>
-      );
+    return <div className={this.props.searched ? 'select-box searched' : 'select-box'} >
+    <input type='file' name='file' id='file' className='select-box--inputfile' onChange={this.handleFileDrop} />
+    <label htmlFor='file'>{this.state.labelValue}</label>
+    </div>;
   }
 
 });
@@ -105,7 +99,7 @@
 
     getInitialState: function(){
       return{
-        frameHtml: ''
+        imgJson: ''
       };
     },
 
@@ -113,8 +107,7 @@
 
       if( status.target.readyState == 4 && status.target.status == 200){
         var data = JSON.parse(status.target.responseText);
-
-        console.log(data);
+        this.setState({imgJson: data });
 
       }
       this.props.finished();
@@ -139,12 +132,28 @@
     },
 
     render: function() {
-      return ( 
-        <div className='google-pane'>
-        </div>
-        );
+
+      var json = this.state.imgJson;
+      var nodes;
+      Object.keys(json).forEach(function(key) {
+        console.log(key, json[key]);
+        nodes += (<ImageResult image={json[key]}/>);
+
+      });
+
+      return <div className='google-pane'>
+      <ImageResult image={this.state.imgJson[0]}/>
+      </div>;
     }
 
+  });
+
+  var ImageResult = React.createClass({
+    render: function() {
+
+      return <div className='image-result'>
+      </div>;
+    }
   });
 
   React.render(
