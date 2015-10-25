@@ -118,7 +118,7 @@ var CroppingTool = React.createClass({
         this.readFile();  
     } ,
 
-    componentWillReceiveProps: function(){
+    componentDidUpdate: function(){
         this.readFile();
     },
 
