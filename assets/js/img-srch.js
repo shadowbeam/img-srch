@@ -1,14 +1,82 @@
 var ImgSrch = React.createClass({
 
-    componentDidMount: function() {
-
-    },
 
     getInitialState: function(){
+
+        var imgSrch = {   
+            that: undefined,
+            states: {
+                waiting: {
+                    initialize:function(target){
+                        this.target = target;
+                    },
+                    toString: function(){
+                        return 'waiting';
+                    },
+                    render: function(){
+                        return;
+                    }
+                },       
+                loading: {
+                    initialize:function(target){
+                        this.target = target;
+                    },
+                    toString: function(){
+                        return "loading";
+                    },
+                    render: function(){
+                        return;
+                    }
+                },  
+                cropping: {
+                    initialize:function(target){
+                        this.target = target;
+                    },
+                    toString: function(){
+                        return 'cropping';
+                    },
+                    render: function(){
+                        console.log(this.target.that.state.file);
+                        return <CroppingTool file={this.target.that.state.file}/>;
+                    }
+                },
+                searched: {
+                    initialize:function(target){
+                        this.target = target;
+                    },
+                    toString: function(){
+                        return 'searched';
+                    },
+                    render: function(){
+                        return <GooglePane imgUrl={this.that.state.imgUrl}/>;                        
+                    }
+                },
+
+            },
+            initialize: function() {
+                this.states.waiting.initialize(this);
+                this.states.loading.initialize(this);
+                this.states.searched.initialize(this);
+                this.states.cropping.initialize(this);
+
+                this.that.setState({state: this.states.waiting});
+            },
+
+            changeState: function(state) {
+                this.that.setState({state: state});
+
+            }
+        };
+
+        imgSrch.that = this;
+        imgSrch.initialize();
+
+
         return {
             imgUrl: '',
-            searching: false,
-            searched: false,
+            imgSrchState: imgSrch,
+            state: imgSrch.states.waiting,
+            file: ''
         };
     },
 
@@ -16,50 +84,51 @@ var ImgSrch = React.createClass({
         this.setState({ imgUrl: url});
     },
 
-    searching: function(){
+    fileSelected: function(file){
+        this.state.file = file;
         this.setState({
-            searching : true,
-            searched: true
+            file: file,
+            state: this.state.imgSrchState.states.cropping
         });
     },
 
-    finished: function(){
-        this.setState({ searching : false });
+    makeClassname: function(){
+        return 'img-srch ' + this.state.state.toString();
     },
 
     render: function() {
-        return <div className={this.state.searching ? 'img-srch searching' : 'img-srch'}>
-        <SelectBox searched={this.state.searched} updateUrl={this.updateUrl} searching={this.searching}/>
-        <GooglePane imgUrl={this.state.imgUrl} finished={this.finished}/>
+        var node = this.state.state.render();
+
+        return <div className={this.makeClassname()}>
+
+        <SelectBox imgSrchState={this.state.imgSrchState}  fileSelectedCallback={this.fileSelected}/>
+        {node}
         <Spinner />
         </div>;
     }
 });
 
-var Spinner = React.createClass({
+var CroppingTool = React.createClass({
 
-    render: function(){
-      return <div className='spinner double-bounce'>
-      <div className='double-bounce1'></div>
-      <div className='double-bounce2'></div>
-      </div>;
-  }
-});
-
-
-var SelectBox = React.createClass({
     getInitialState: function(){
-        return{
-            labelValue: 'Choose a file',
-            file: null
-        }
+        return { fileSrc : ''};
     },
 
-    handleFileDrop: function(e){
-        this.props.searching();
-        fileName = e.target.value.split( '\\' ).pop();
-        this.setState({ labelValue : fileName + ' selected' });
-        this.uploadFile(e.target.files[0]);
+    componentDidMount: function(){
+        this.readFile();  
+    } ,
+
+    componentWillReceiveProps: function(){
+        this.readFile();
+    },
+
+    readFile: function(){
+        var reader = new FileReader();
+        var that = this;
+        reader.onloadend = function(){
+            that.setState({fileSrc: reader.result});
+        }
+        reader.readAsDataURL(this.props.file);
     },
 
     handleUploadStateChange : function(status){
@@ -79,9 +148,51 @@ var SelectBox = React.createClass({
         request.send(data);
     },
 
+    render: function(){
+      return <div className='cropping-tool'>
+      <img src={this.state.fileSrc}/>
+      </div>;
+  }
+});
+
+var Spinner = React.createClass({
+
+    render: function(){
+      return <div className='spinner double-bounce'>
+      <div className='double-bounce1'></div>
+      <div className='double-bounce2'></div>
+      </div>;
+  }
+});
+
+
+var SelectBox = React.createClass({
+    getInitialState: function(){
+        return{
+            labelValue: 'Choose a file',
+            file: null,
+            searched: false
+        }
+    },
+
+    handleFileDrop: function(e){
+        this.props.imgSrchState.changeState(this.props.imgSrchState.states.loading);
+        fileName = e.target.value.split( '\\' ).pop();
+        this.setState({ 
+            labelValue : fileName + ' selected',
+            searched: true
+        });
+        this.props.fileSelectedCallback(e.target.files[0]);       
+    },
+
+    makeSelectBoxClassName: function(){
+        var searched = this.state.searched ? 'searched' : '';
+        return 'select-box ' + searched;
+    },
+
 
     render: function() {
-        return <div className={this.props.searched ? 'select-box searched' : 'select-box'} >
+        return <div className={this.makeSelectBoxClassName()}>
         <input type='file' name='file' id='file' className='select-box--inputfile' onChange={this.handleFileDrop} />
         <label htmlFor='file'>{this.state.labelValue}</label>
         </div>;

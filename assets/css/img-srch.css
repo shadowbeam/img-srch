@@ -102,7 +102,7 @@ label {
   top: 100%;
   transform: translateY(-100%);
 }
-.searching .spinner {
+.img-srch.loading .spinner {
   display: inherit;
 }
 .google-pane {
