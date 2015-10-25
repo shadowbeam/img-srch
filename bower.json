@@ -10,6 +10,7 @@
     "tests"
   ],
   "dependencies": {
+    "darkroom": "darkroomjs#~2.0.1",
     "less": "~2.5.1"
   },
   "authors": [

@@ -116,10 +116,36 @@ var CroppingTool = React.createClass({
 
     componentDidMount: function(){
         this.readFile();  
+        this.darkroomInit();
     } ,
 
-    componentDidUpdate: function(){
-        this.readFile();
+    componentDidUpdate: function(prevProps, prevState){
+        if(prevState.fileSrc != this.state.fileSrc){
+            this.readFile();
+            this.darkroomInit();
+        }  
+    },
+
+    darkroomInit: function(){
+        new Darkroom('#target-img', {
+            minWidth: 100,
+            minHeight: 100,
+            maxWidth: 500,
+            maxHeight: 500,
+            plugins: {
+                crop: {
+                    minHeight: 50,
+                    minWidth: 50,
+                },
+                save: false // disable plugin
+            },
+            initialize: function() {
+                this.plugins['crop'].requireFocus();
+
+                this.addEventListener('core:transformation', function() { 
+                });
+            }
+        });
     },
 
     readFile: function(){
@@ -150,7 +176,7 @@ var CroppingTool = React.createClass({
 
     render: function(){
       return <div className='cropping-tool'>
-      <img src={this.state.fileSrc}/>
+      <img id='target-img' className='target-img' src={this.state.fileSrc}/>
       </div>;
   }
 });

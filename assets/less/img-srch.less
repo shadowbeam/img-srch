@@ -98,13 +98,9 @@ label{
   }
 
   .spinner{
+    .vertical-align();
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);  
-    left: 50%;
-    transform: translateX(-50%);
     display: none;
-
   }
 
   .select-box.searched{
@@ -126,6 +122,7 @@ label{
   .google-pane .image-result h2{
     font-size: 1.25rem;
   }
+
   .google-pane .image-result h3{
     font-size: 1rem;
     max-height: 20px;
@@ -145,4 +142,35 @@ label{
 
   p{
     margin-top: 0;
+  }
+
+.vertical-align {
+    position: $position;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+
+  .cropping-tool{
+    text-align: center;
+    height: 100%;
+  }
+
+  .cropping-tool img.target-img{
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .cropping-tool .darkroom-container{
+    .vertical-align();
+  }
+
+  .cropping-tool .darkroom-toolbar{
+    display: none;
+  }
+
+  .cropping-tool .darkroom-container .canvas-container{
+    margin-left: auto;
+    margin-right: auto;
   }
