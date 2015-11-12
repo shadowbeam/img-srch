@@ -156,7 +156,7 @@ p {
   transform: translateY(-50%);
 }
 .cropping-tool .darkroom-toolbar {
-  display: none;
+  /*display: none;*/
 }
 .cropping-tool .darkroom-container .canvas-container {
   margin-left: auto;

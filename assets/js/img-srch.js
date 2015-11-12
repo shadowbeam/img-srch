@@ -127,7 +127,27 @@ var CroppingTool = React.createClass({
     },
 
     darkroomInit: function(){
-        new Darkroom('#target-img', {
+
+        Darkroom.plugins['save'] = Darkroom.Plugin.extend({
+            defaults: {
+                callback: function() {
+                    this.darkroom.selfDestroy();
+                    console.log(save);
+                }
+            },
+
+            initialize: function InitDarkroomSavePlugin() {
+                var buttonGroup = this.darkroom.toolbar.createButtonGroup();
+
+                this.destroyButton = buttonGroup.createButton({
+                    image: 'save'
+                });
+
+                this.destroyButton.addEventListener('click', this.options.callback.bind(this));
+            },
+        });
+
+        this.state.darkroom = new Darkroom('#target-img', {
             minWidth: 100,
             minHeight: 100,
             maxWidth: 500,
@@ -137,15 +157,30 @@ var CroppingTool = React.createClass({
                     minHeight: 50,
                     minWidth: 50,
                 },
-                save: false // disable plugin
-            },
-            initialize: function() {
-                this.plugins['crop'].requireFocus();
-
-                this.addEventListener('core:transformation', function() { 
-                });
+                save: {
+                  callback: function() {
+                    this.darkroom.selfDestroy();
+                    var newImage = dkrm.canvas.toDataURL();
+                    varThatStoresYourImageData = newImage;
+                }
             }
-        });
+        },
+        initialize: function() {
+            this.plugins['crop'].requireFocus();
+
+            this.addEventListener('core:transformation', function() { 
+            });
+        }
+    });
+
+
+
+    },
+
+    cropImage: function(){
+        var cropped = this.state.darkroom.canvas.toDataURL();
+        this.state.darkroom.selfDestroy();
+        this.setState({fileSrc: cropped});
     },
 
     readFile: function(){
@@ -177,6 +212,7 @@ var CroppingTool = React.createClass({
     render: function(){
       return <div className='cropping-tool'>
       <img id='target-img' className='target-img' src={this.state.fileSrc}/>
+      <button onClick={this.cropImage} id='crop'>Crop</button>
       </div>;
   }
 });
