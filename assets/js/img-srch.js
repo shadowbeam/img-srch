@@ -116,70 +116,25 @@ var CroppingTool = React.createClass({
 
     componentDidMount: function(){
         this.readFile();  
-        this.darkroomInit();
+        //this.darkroomInit();
     } ,
 
     componentDidUpdate: function(prevProps, prevState){
         if(prevState.fileSrc != this.state.fileSrc){
             this.readFile();
-            this.darkroomInit();
+          //  this.darkroomInit();
         }  
     },
 
     darkroomInit: function(){
-
-        Darkroom.plugins['save'] = Darkroom.Plugin.extend({
-            defaults: {
-                callback: function() {
-                    this.darkroom.selfDestroy();
-                    console.log(save);
-                }
-            },
-
-            initialize: function InitDarkroomSavePlugin() {
-                var buttonGroup = this.darkroom.toolbar.createButtonGroup();
-
-                this.destroyButton = buttonGroup.createButton({
-                    image: 'save'
-                });
-
-                this.destroyButton.addEventListener('click', this.options.callback.bind(this));
-            },
-        });
-
-        this.state.darkroom = new Darkroom('#target-img', {
-            minWidth: 100,
-            minHeight: 100,
-            maxWidth: 500,
-            maxHeight: 500,
-            plugins: {
-                crop: {
-                    minHeight: 50,
-                    minWidth: 50,
-                },
-                save: {
-                  callback: function() {
-                    this.darkroom.selfDestroy();
-                    var newImage = dkrm.canvas.toDataURL();
-                    varThatStoresYourImageData = newImage;
-                }
-            }
-        },
-        initialize: function() {
-            this.plugins['crop'].requireFocus();
-
-            this.addEventListener('core:transformation', function() { 
-            });
-        }
-    });
-
-
-
+        var image = document.querySelector('.img-container > img');
+        var cropper = new Cropper(image);
     },
 
     cropImage: function(){
         var cropped = this.state.darkroom.canvas.toDataURL();
         this.state.darkroom.selfDestroy();
+
         this.setState({fileSrc: cropped});
     },
 
@@ -188,6 +143,7 @@ var CroppingTool = React.createClass({
         var that = this;
         reader.onloadend = function(){
             that.setState({fileSrc: reader.result});
+            that.darkroomInit();
         }
         reader.readAsDataURL(this.props.file);
     },
@@ -211,7 +167,9 @@ var CroppingTool = React.createClass({
 
     render: function(){
       return <div className='cropping-tool'>
+      <div className='img-container'>
       <img id='target-img' className='target-img' src={this.state.fileSrc}/>
+      </div>
       <button onClick={this.cropImage} id='crop'>Crop</button>
       </div>;
   }
@@ -326,7 +284,7 @@ var ImageResult = React.createClass({
     },
 
     render: function() {
-        return <div className='image-result'>
+        return <div className='image-result' ref='image-result'>
         <h2><a href={this.props.url}>{this.props.title}</a></h2>
         <h3 dangerouslySetInnerHTML={this.createMarkup(this.props.cite)}></h3>
         <p dangerouslySetInnerHTML={this.createMarkup(this.props.description)}></p>
