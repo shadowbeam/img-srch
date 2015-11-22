@@ -14,7 +14,7 @@ var ImgSrch = React.createClass({
                         return 'waiting';
                     },
                     render: function(){
-                        return;
+                        return <SelectBox imgSrchState={this.target.that.state.imgSrchState}  fileSelectedCallback={this.target.that.fileSelected}/>;
                     }
                 },       
                 loading: {
@@ -38,6 +38,7 @@ var ImgSrch = React.createClass({
                     render: function(){
                         console.log(this.target.that.state.file);
                         return <CroppingTool file={this.target.that.state.file}/>;
+                        <ConfirmCropBox imgSrchState={this.target.that.state.imgSrchState}/>;
                     }
                 },
                 searched: {
@@ -48,7 +49,9 @@ var ImgSrch = React.createClass({
                         return 'searched';
                     },
                     render: function(){
-                        return <GooglePane imgUrl={this.that.state.imgUrl}/>;                        
+                        return <GooglePane imgUrl={this.that.state.imgUrl}/>;
+                        <SelectBox imgSrchState={this.state.imgSrchState}  fileSelectedCallback={this.fileSelected}/>
+
                     }
                 },
 
@@ -100,8 +103,6 @@ var ImgSrch = React.createClass({
         var node = this.state.state.render();
 
         return <div className={this.makeClassname()}>
-
-        <SelectBox imgSrchState={this.state.imgSrchState}  fileSelectedCallback={this.fileSelected}/>
         {node}
         <Spinner />
         </div>;
@@ -111,68 +112,70 @@ var ImgSrch = React.createClass({
 var CroppingTool = React.createClass({
 
     getInitialState: function(){
-        return { fileSrc : ''};
+        return { fileSrc : 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs='};
     },
 
     componentDidMount: function(){
         this.readFile();  
-        //this.darkroomInit();
     } ,
 
     componentDidUpdate: function(prevProps, prevState){
         if(prevState.fileSrc != this.state.fileSrc){
             this.readFile();
-          //  this.darkroomInit();
         }  
     },
 
-    darkroomInit: function(){
-        var image = document.querySelector('.img-container > img');
-        var cropper = new Cropper(image);
-    },
+    croppingToolInit: function(){
+        if(this.state.cropper == undefined){
+           var image = document.querySelector('.img-container > img');
+           this.state.cropper = new Cropper(image, {
+              moveable: false,
+              autoCrop: false
+          });
+       }
+       
+   },
 
-    cropImage: function(){
-        var cropped = this.state.darkroom.canvas.toDataURL();
-        this.state.darkroom.selfDestroy();
+   cropImage: function(){
+    var cropped = this.state.cropper.getCroppedCanvas().toDataURL();
+    this.uploadFile(cropped);
+},
 
-        this.setState({fileSrc: cropped});
-    },
+readFile: function(){
+    var reader = new FileReader();
+    var that = this;
+    reader.onloadend = function(){
+        that.setState({fileSrc: reader.result});
+        that.croppingToolInit();
+    }
+    reader.readAsDataURL(this.props.file);
+},
 
-    readFile: function(){
-        var reader = new FileReader();
-        var that = this;
-        reader.onloadend = function(){
-            that.setState({fileSrc: reader.result});
-            that.darkroomInit();
-        }
-        reader.readAsDataURL(this.props.file);
-    },
+handleUploadStateChange : function(status){
+    if( status.target.readyState == 4 && status.target.status == 200){
+        this.props.updateUrl(status.target.responseText);
+    } 
+},
 
-    handleUploadStateChange : function(status){
-        if( status.target.readyState == 4 && status.target.status == 200){
-            this.props.updateUrl(status.target.responseText);
-        } 
-    },
+uploadFile: function(file){
+    var data = new FormData();
+    data.append('file', file);
 
-    uploadFile: function(file){
-        var data = new FormData();
-        data.append('file', file);
+    var request = new XMLHttpRequest();
+    request.open('POST', 'file-upload.php', true);
+    request.onreadystatechange = this.handleUploadStateChange;
 
-        var request = new XMLHttpRequest();
-        request.open('POST', 'file-upload.php', true);
-        request.onreadystatechange = this.handleUploadStateChange;
+    request.send(data);
+},
 
-        request.send(data);
-    },
-
-    render: function(){
-      return <div className='cropping-tool'>
-      <div className='img-container'>
-      <img id='target-img' className='target-img' src={this.state.fileSrc}/>
-      </div>
-      <button onClick={this.cropImage} id='crop'>Crop</button>
-      </div>;
-  }
+render: function(){
+  return <div className='cropping-tool'>
+  <div className='img-container'>
+  <img id='target-img' className='target-img' src={this.state.fileSrc}/>
+  </div>
+  <button onClick={this.cropImage} id='crop'>Crop</button>
+  </div>;
+}
 });
 
 var Spinner = React.createClass({

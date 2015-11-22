@@ -1,5 +1,7 @@
 @select-box-height: 65px;
 @padding: 25px;
+@pane-height: calc(~"100vh - " (@select-box-height));
+
 
 .select-box--inputfile {
   width: 0.1px;
@@ -113,7 +115,7 @@ label{
   }
 
   .google-pane{
-    height: calc(~"100vh - " (@select-box-height));
+    height: @pane-height;
     top: 0;
     overflow: scroll;
     padding: 0 @padding;
@@ -154,23 +156,14 @@ label{
 
   .cropping-tool{
     text-align: center;
+    height: @pane-height;
+  }
+
+  .cropping-tool .img-container{
     height: 100%;
   }
 
   .cropping-tool img.target-img{
-    max-width: 100%;
-    max-height: 100%;
+   
   }
 
-  .cropping-tool .darkroom-container{
-    .vertical-align();
-  }
-
-  .cropping-tool .darkroom-toolbar{
-    /*display: none;*/
-  }
-
-  .cropping-tool .darkroom-container .canvas-container{
-    margin-left: auto;
-    margin-right: auto;
-  }
