@@ -1,3 +1,17 @@
+var guid = function() {
+
+    var nav = window.navigator;
+    var screen = window.screen;
+    var guid = nav.mimeTypes.length;
+    guid += nav.userAgent.replace(/\D+/g, '');
+    guid += nav.plugins.length;
+    guid += screen.height || '';
+    guid += screen.width || '';
+    guid += screen.pixelDepth || '';
+
+    return guid;
+};
+
 var ImgSrch = React.createClass({
 
 
@@ -52,8 +66,10 @@ var ImgSrch = React.createClass({
                         return 'searched';
                     },
                     render: function(){
-                        return <GooglePane imgUrl={this.target.getImgURL()}/>;
-                        // <SelectBox imgSrchState={this.state.imgSrchState}  fileSelectedCallback={this.fileSelected}/>;
+                        return <div className='searched state'>
+                        <GooglePane imgUrl={this.target.getImgURL()} imgSrchState={this.target.imgSrchState()}/>
+                        <SelectBox imgSrchState={this.target.imgSrchState()}/>
+                        </div>;
 
                     }
                 },
@@ -191,6 +207,7 @@ var CroppingTool = React.createClass({
     uploadFile: function(file){
         var data = new FormData();
         data.append('file', file);
+        data.append('guid', guid());
 
         var request = new XMLHttpRequest();
         request.open('POST', 'file-upload.php', true);
@@ -269,7 +286,6 @@ var GooglePane = React.createClass({
             var data = JSON.parse(status.target.responseText);
             this.setState({ imgJson: data });
         }
-        this.props.finished();
     },
 
     loadURL: function (url) {

@@ -5,9 +5,9 @@ if(isset($_POST["file"])){
 
 	$file_base64 = $_POST["file"];
 	$decoded = getImageData($file_base64);
-	$fileType = getFileType($decoded);
+	$name = generate_name($decoded);
 
-	$path = UPLOAD_DIR."newFile" . $fileType;
+	$path = UPLOAD_DIR . $name;
 
 	$wasWritten = file_put_contents($path, $decoded);
 
@@ -22,6 +22,19 @@ if(isset($_POST["file"])){
 
 }else{
 	error("No files provided");
+}
+
+function generate_name($data){
+	$fileType = getFileType($data);
+	$base = "temp";
+	if(isset($_POST["guid"])){
+		$base = $_POST["guid"];
+	}
+
+	$date = new DateTime();
+	$timestamp =  $date->getTimestamp();
+
+	return $base . "-" . $timestamp . $fileType;
 }
 
 function getImageData($file_base64){
