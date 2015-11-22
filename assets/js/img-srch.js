@@ -14,7 +14,7 @@ var ImgSrch = React.createClass({
                         return 'waiting';
                     },
                     render: function(){
-                        return <SelectBox imgSrchState={this.target.imgSrchState()}  fileSelectedCallback={this.target.that.fileSelected}/>;
+                        return <SelectBox imgSrchState={this.target.imgSrchState()} />;
                     }
                 },       
                 loading: {
@@ -35,9 +35,12 @@ var ImgSrch = React.createClass({
                     toString: function(){
                         return 'cropping';
                     },
+                    transition: function(){
+                        this.target.changeState(this.target.states.searched);
+                    },
                     render: function(){
                         console.log(this.target.that.state.file);
-                        return <CroppingTool file={this.target.that.state.file} imgSrchState={this.target.imgSrchState()} />;
+                        return <CroppingTool file={this.target.getFile()} imgSrchState={this.target.imgSrchState()} />;
                         // <ConfirmCropBox imgSrchState={this.target.that.state.imgSrchState}/>;
                     }
                 },
@@ -49,7 +52,7 @@ var ImgSrch = React.createClass({
                         return 'searched';
                     },
                     render: function(){
-                        return <GooglePane imgUrl={this.target.that.state.imgUrl}/>;
+                        return <GooglePane imgUrl={this.target.getImgURL()}/>;
                         // <SelectBox imgSrchState={this.state.imgSrchState}  fileSelectedCallback={this.fileSelected}/>;
 
                     }
@@ -65,12 +68,32 @@ var ImgSrch = React.createClass({
                 this.that.setState({state: this.states.waiting});
             },
 
+            loading: function(){
+                this.changeState(this.states.loading);
+            },
+
+            getFile: function(){
+                return this.that.state.file;
+            },
+
+            getImgURL: function(){
+                return this.that.state.imgUrl;
+            },
+
             setImgURL: function(url){
                 this.that.state.imgUrl = url;
             },
 
+            fileSelected: function(file){
+                this.that.fileSelected(file);
+            },
+
             imgSrchState: function(){
                 return this.that.state.imgSrchState;
+            },
+
+            transition: function(){
+                this.that.state.state.transition();
             },
 
             changeState: function(state) {
@@ -161,7 +184,7 @@ var CroppingTool = React.createClass({
     handleUploadStateChange : function(status){
         if( status.target.readyState == 4 && status.target.status == 200){
             this.props.imgSrchState.setImgURL(status.target.responseText);
-            this.props.imgSrchState.changeState(this.props.imgSrchState.states.searched);
+            this.props.imgSrchState.transition();
         } 
     },
 
@@ -207,13 +230,13 @@ var SelectBox = React.createClass({
     },
 
     handleFileDrop: function(e){
-        this.props.imgSrchState.changeState(this.props.imgSrchState.states.loading);
+        this.props.imgSrchState.loading();
         fileName = e.target.value.split( '\\' ).pop();
         this.setState({ 
             labelValue : fileName + ' selected',
             searched: true
         });
-        this.props.fileSelectedCallback(e.target.files[0]);       
+        this.props.imgSrchState.fileSelected(e.target.files[0]);       
     },
 
     makeSelectBoxClassName: function(){
@@ -256,6 +279,9 @@ var GooglePane = React.createClass({
         request.send();
     },
 
+    componentDidMount: function(){
+        this.loadURL(this.props.imgUrl);
+    },
 
     componentDidUpdate: function(prevProps, prevState){
         if(prevProps.imgUrl != this.props.imgUrl){
