@@ -1,47 +1,72 @@
 <?php
 define("UPLOAD_DIR", "uploads/");
 
-if (!empty($_FILES["file"])) {
-	$file = $_FILES["file"];
+if(isset($_POST["file"])){
 
-	if ($file["error"] !== UPLOAD_ERR_OK) {
-		echo "<p>An error occurred.</p>";
-		exit;
+	$file_base64 = $_POST["file"];
+	$decoded = getImageData($file_base64);
+	$fileType = getFileType($decoded);
+
+	$path = UPLOAD_DIR."newFile" . $fileType;
+
+	$wasWritten = file_put_contents($path, $decoded);
+
+	if($wasWritten === false){
+		error("File wasn't written");
 	}
 
-    // ensure a safe filename
-	$name = preg_replace("/[^A-Z0-9._-]/i", "_", $file["name"]);
+	chmod($path, 0644);
 
-    // don't overwrite an existing file
-	$i = 0;
-	$parts = pathinfo($name);
-	while (file_exists(UPLOAD_DIR . $name)) {
-		$i++;
-		$name = $parts["filename"] . "-" . $i . "." . $parts["extension"];
-	}
-
-    // preserve file from temporary directory
-	$success = move_uploaded_file($file["tmp_name"],
-		UPLOAD_DIR . $name);
+	echo getSavedImageUrl($path);
 
 
-	if (!$success) { 
-		echo "<p>Unable to save file.</p>";
-		http_response_code(500);
-		exit;
-	}else{
-		$host = $_SERVER['HTTP_HOST'];
-		$path = dirname($_SERVER['PHP_SELF']);
-
-		// echo "http://" . $host . $path . "/" . UPLOAD_DIR . $name;
-		echo "http://dumbainfarm.co.uk/data/uploads/index-btm.jpg";
-	}
-
-    // set proper permissions on the new file
-	chmod(UPLOAD_DIR . $name, 0644);
 }else{
-	echo "No files provided";
+	error("No files provided");
+}
+
+function getImageData($file_base64){
+	$file_base64_extracted = preg_replace('#^data:image/\w+;base64,#i', '', $file_base64);
+
+	$decoded = base64_decode($file_base64_extracted);
+	return $decoded;
+}
+
+function getFileType($image_data){
+	$f = finfo_open();
+	$mime_type = finfo_buffer($f, $image_data, FILEINFO_MIME_TYPE);
+	$ext = get_extension($mime_type);
+	if($ext === false){
+		error("Unsupported filetype: " . $mime_type);
+	}
+	return $ext;
+}
+
+function get_extension($imagetype)
+{
+	if(empty($imagetype)) return false;
+	switch($imagetype)
+	{
+		case 'image/bmp': return '.bmp';
+		case 'image/gif': return '.gif';
+		case 'image/jpeg': return '.jpg';
+		case 'image/tiff': return '.tif';
+		case 'image/png': return '.png';
+		default: return false;
+	}
+}
+
+function error($msg){
+	echo $msg;
 	http_response_code(500);
 	header('HTTP/1.1 401 Unauthorized', true, 500);
+	exit;
+}
+
+function getSavedImageUrl($image_path){
+	$host = $_SERVER['HTTP_HOST'];
+	$path = dirname($_SERVER['PHP_SELF']);
+
+	return "http://" . $host . $path . "/" . $image_path;
+	//return "http://dumbainfarm.co.uk/data/uploads/index-btm.jpg";
 }
 ?>
