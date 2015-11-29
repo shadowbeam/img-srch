@@ -2,6 +2,15 @@
 module.exports = function(grunt) {
 
 	grunt.initConfig({
+
+
+		concat: {
+			dist: {
+				src: ['assets/js/components/*.js'],
+				dest: 'assets/js/bundle.js',
+			},
+		},
+
 		lint: {
 			all:['assets/js/*.js']
 		},
@@ -31,7 +40,8 @@ module.exports = function(grunt) {
 			},
 
 			js: {
-				files: ['assets/js/*.js'], 
+				files: ['assets/js/components/*.js'],
+				tasks: ['concat'],
 				options: {
 					reload: true,
 					livereload: {
@@ -62,6 +72,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('default', 'serve');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-less');
+	grunt.loadNpmTasks('grunt-contrib-concat');
 
 
 

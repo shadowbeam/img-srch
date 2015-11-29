@@ -1,3 +1,149 @@
+var CroppingTool = React.createClass({
+
+    getInitialState: function(){
+        return { fileSrc : 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs='};
+    },
+
+    componentDidMount: function(){
+        this.readFile();  
+    } ,
+
+    componentDidUpdate: function(prevProps, prevState){
+        if(prevState.fileSrc != this.state.fileSrc){
+            this.readFile();
+        }  
+    },
+
+    croppingToolInit: function(){
+        if(this.state.cropper == undefined){
+            var image = document.querySelector('.img-container > img');
+            this.state.cropper = new Cropper(image, {
+              moveable: false,
+              autoCrop: false
+          });
+        }
+
+    },
+
+    cropImage: function(){
+        var canvas = this.state.cropper.getCroppedCanvas();
+        if(!canvas){
+            canvas = this.state.cropper.canvas;
+        }
+        this.uploadFile(canvas.toDataURL());
+    },
+
+    readFile: function(){
+        var reader = new FileReader();
+        var that = this;
+        reader.onloadend = function(){
+            that.setState({fileSrc: reader.result});
+            that.croppingToolInit();
+        }
+        reader.readAsDataURL(this.props.file);
+    },
+
+    handleUploadStateChange : function(status){
+        if( status.target.readyState == 4 && status.target.status == 200){
+            this.props.imgSrchState.setImgURL(status.target.responseText);
+            this.props.imgSrchState.transition();
+        } 
+    },
+
+    uploadFile: function(file){
+        var data = new FormData();
+        data.append('file', file);
+        data.append('guid', guid());
+
+        var request = new XMLHttpRequest();
+        request.open('POST', 'file-upload.php', true);
+        request.onreadystatechange = this.handleUploadStateChange;
+
+        request.send(data);
+    },
+
+    render: function(){
+      return <div className='cropping-tool'>
+      <div className='img-container'>
+      <img id='target-img' className='target-img' src={this.state.fileSrc}/>
+      </div>
+      <button onClick={this.cropImage} id='crop'>Crop</button>
+      </div>;
+  }
+});
+
+var GooglePane = React.createClass({
+
+    getInitialState: function(){
+        return{ 
+            imgJson: [{}],
+            //scraper: 'assets/php/scraper.php?url='
+            scraper: 'test/php/scraper-mock.php?url='
+        };
+    },
+
+    handleStatusChange: function (status) {
+        if( status.target.readyState == 4 && status.target.status == 200){
+            var data = JSON.parse(status.target.responseText);
+            this.setState({ imgJson: data });
+        }
+    },
+
+    loadURL: function (url) {
+        var request = new XMLHttpRequest();
+        request.open('GET', this.state.scraper + url, true);
+        request.onreadystatechange = this.handleStatusChange;
+        request.send();
+    },
+
+    componentDidMount: function(){
+        this.loadURL(this.props.imgUrl);
+    },
+
+    componentDidUpdate: function(prevProps, prevState){
+        if(prevProps.imgUrl != this.props.imgUrl){
+            this.loadURL(this.props.imgUrl);
+        }
+    },
+
+    render: function() {
+        var images = this.state.imgJson.map(function (img) {
+            return <ImageResult title={img.title} image={img} description={img.description} cite={img.cite} url={img.url}/>;
+        });
+
+        return <div className='google-pane'>
+        <ImagePreview imgUrl={this.props.imgUrl}/>
+        <div className='image-results'>
+        {images}
+        </div>
+        </div>;
+
+    }
+
+});
+
+var ImagePreview = React.createClass({
+
+    render: function(){
+        return  <div className='image-preview'>
+        <img className='target-image' src={this.props.imgUrl}/>
+        </div>;
+    }
+});
+var ImageResult = React.createClass({
+
+    createMarkup: function(html){ 
+        return {__html: html};
+    },
+
+    render: function() {
+        return <div className='image-result' ref='image-result'>
+        <h2><a href={this.props.url}>{this.props.title}</a></h2>
+        <h3 dangerouslySetInnerHTML={this.createMarkup(this.props.cite)}></h3>
+        <p dangerouslySetInnerHTML={this.createMarkup(this.props.description)}></p>
+        </div>;
+    }
+});
 var guid = function() {
 
     var nav = window.navigator;
@@ -152,90 +298,6 @@ var ImgSrch = React.createClass({
     }
 });
 
-var CroppingTool = React.createClass({
-
-    getInitialState: function(){
-        return { fileSrc : 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs='};
-    },
-
-    componentDidMount: function(){
-        this.readFile();  
-    } ,
-
-    componentDidUpdate: function(prevProps, prevState){
-        if(prevState.fileSrc != this.state.fileSrc){
-            this.readFile();
-        }  
-    },
-
-    croppingToolInit: function(){
-        if(this.state.cropper == undefined){
-            var image = document.querySelector('.img-container > img');
-            this.state.cropper = new Cropper(image, {
-              moveable: false,
-              autoCrop: false
-          });
-        }
-
-    },
-
-    cropImage: function(){
-        var canvas = this.state.cropper.getCroppedCanvas();
-        if(!canvas){
-            canvas = this.state.cropper.canvas;
-        }
-        this.uploadFile(canvas.toDataURL());
-    },
-
-    readFile: function(){
-        var reader = new FileReader();
-        var that = this;
-        reader.onloadend = function(){
-            that.setState({fileSrc: reader.result});
-            that.croppingToolInit();
-        }
-        reader.readAsDataURL(this.props.file);
-    },
-
-    handleUploadStateChange : function(status){
-        if( status.target.readyState == 4 && status.target.status == 200){
-            this.props.imgSrchState.setImgURL(status.target.responseText);
-            this.props.imgSrchState.transition();
-        } 
-    },
-
-    uploadFile: function(file){
-        var data = new FormData();
-        data.append('file', file);
-        data.append('guid', guid());
-
-        var request = new XMLHttpRequest();
-        request.open('POST', 'file-upload.php', true);
-        request.onreadystatechange = this.handleUploadStateChange;
-
-        request.send(data);
-    },
-
-    render: function(){
-      return <div className='cropping-tool'>
-      <div className='img-container'>
-      <img id='target-img' className='target-img' src={this.state.fileSrc}/>
-      </div>
-      <button onClick={this.cropImage} id='crop'>Crop</button>
-      </div>;
-  }
-});
-
-var Spinner = React.createClass({
-
-    render: function(){
-      return <div className='spinner double-bounce'>
-      <div className='double-bounce1'></div>
-      <div className='double-bounce2'></div>
-      </div>;
-  }
-});
-
 
 var SelectBox = React.createClass({
     getInitialState: function(){
@@ -270,79 +332,12 @@ var SelectBox = React.createClass({
     }
 
 });
-
-var GooglePane = React.createClass({
-
-    getInitialState: function(){
-        return{ 
-            imgJson: [{}],
-            //scraper: 'assets/php/scraper.php?url='
-            scraper: 'test/php/scraper-mock.php?url='
-        };
-    },
-
-    handleStatusChange: function (status) {
-        if( status.target.readyState == 4 && status.target.status == 200){
-            var data = JSON.parse(status.target.responseText);
-            this.setState({ imgJson: data });
-        }
-    },
-
-    loadURL: function (url) {
-        var request = new XMLHttpRequest();
-        request.open('GET', this.state.scraper + url, true);
-        request.onreadystatechange = this.handleStatusChange;
-        request.send();
-    },
-
-    componentDidMount: function(){
-        this.loadURL(this.props.imgUrl);
-    },
-
-    componentDidUpdate: function(prevProps, prevState){
-        if(prevProps.imgUrl != this.props.imgUrl){
-            this.loadURL(this.props.imgUrl);
-        }
-    },
-
-    render: function() {
-        var images = this.state.imgJson.map(function (img) {
-            return <ImageResult title={img.title} image={img} description={img.description} cite={img.cite} url={img.url}/>;
-        });
-
-        return <div className='google-pane'>
-        <ImagePreview imgUrl={this.props.imgUrl}/>
-        <div className='image-results'>
-        {images}
-        </div>
-        </div>;
-
-    }
-
-});
-
-var ImagePreview = React.createClass({
+var Spinner = React.createClass({
 
     render: function(){
-        return  <div className='image-preview'>
-        <img className='target-image' src={this.props.imgUrl}/>
-        </div>;
-    }
+      return <div className='spinner double-bounce'>
+      <div className='double-bounce1'></div>
+      <div className='double-bounce2'></div>
+      </div>;
+  }
 });
-
-var ImageResult = React.createClass({
-
-    createMarkup: function(html){ 
-        return {__html: html};
-    },
-
-    render: function() {
-        return <div className='image-result' ref='image-result'>
-        <h2><a href={this.props.url}>{this.props.title}</a></h2>
-        <h3 dangerouslySetInnerHTML={this.createMarkup(this.props.cite)}></h3>
-        <p dangerouslySetInnerHTML={this.createMarkup(this.props.description)}></p>
-        </div>;
-    }
-});
-
-React.render(<ImgSrch/>, document.getElementById('img-srch'));
