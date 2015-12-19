@@ -1,0 +1,169 @@
+@select-box-height: 65px;
+@padding: 25px;
+@pane-height: calc(~"100vh - " (@select-box-height));
+
+
+.select-box--inputfile {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+.select-box--inputfile + label {
+  font-size: 1.25em;
+  font-weight: 700;
+  color: white;
+  background-color: black;
+  display: inline-block;
+  cursor: pointer;
+  outline: 1px dotted #000;
+  outline: -webkit-focus-ring-color auto 5px;
+}
+.select-box--inputfile:focus + label,
+.select-box--inputfile + label:hover {
+  background-color: red;
+}
+.google-pane iframe {
+  width: 100%;
+  max-width: 100%;
+}
+
+body,html {
+  font-family: 'Lato', sans-serif;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+label{
+  width: 100%;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.select-box {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  height: @select-box-height;
+  transform: translateY(-50%);
+  -webkit-transition: top 0.3s ease-in-out;
+}
+
+
+.img-srch{
+  height: 100%;
+  overflow: hidden;
+}
+
+.double-bounce {
+  width: 27px;
+  height: 27px;
+
+  position: relative;
+}
+
+.double-bounce1, .double-bounce2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #333;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  -webkit-animation: bounce 2.0s infinite ease-in-out;
+  animation: bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+@-webkit-keyframes bounce {
+  0%, 100% { -webkit-transform: scale(0.0) }
+  50% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+    } 50% {
+      transform: scale(1.0);
+      -webkit-transform: scale(1.0);
+    }
+  }
+
+  .spinner{
+    .vertical-align();
+    position: absolute;
+    display: none;
+  }
+
+  .select-box.searched{
+    top: 100%;
+    transform: translateY(-100%);
+  }
+
+  .img-srch.loading .spinner {
+    display: inherit;
+  }
+
+  .google-pane{
+    height: @pane-height;
+    top: 0;
+    overflow: scroll;
+    padding: 0 @padding;
+  }
+
+  .google-pane .image-result h2{
+    font-size: 1.25rem;
+  }
+
+  .google-pane .image-result h3{
+    font-size: 1rem;
+    max-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .google-pane .target-image{
+    max-width: 100%;
+    max-height: 100px;
+  }
+
+  h2, h3{
+    margin: 0.5rem 0;
+  }
+
+  p{
+    margin-top: 0;
+  }
+
+.vertical-align {
+    position: $position;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+
+  .cropping-tool{
+    text-align: center;
+    height: @pane-height;
+  }
+
+  .cropping-tool .img-container{
+    height: 100%;
+  }
+
+  .cropping-tool img.target-img{
+   
+  }
+

@@ -9,14 +9,17 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-less": "^0.1.7",
     "grunt-reload": "^0.2.0",
-    "grunt-serve": "^0.1.6"
+    "grunt-serve": "^0.1.6",
+    "react": "^0.14.3"
   },
   "devDependencies": {
+    "flux": "^2.1.1",
     "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-less": "^1.0.1",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.9",
     "karma-chrome-launcher": "^0.2.0",
-    "karma-jasmine": "^0.3.6"
+    "karma-jasmine": "^0.3.6",
+    "vinyl-source-stream": "^1.1.0"
   }
 }

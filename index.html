@@ -3,8 +3,7 @@
 <head>
 	<title>ImgSrch</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.min.js"></script>
-	<link rel="stylesheet" type="text/css" href="assets/css/img-srch.css">
+	<link rel="stylesheet" type="text/css" href="src/css/img-srch.css">
 	<link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 	<!-- 	<link href='bower_components/darkroom/build/darkroom.css' rel='stylesheet' type='text/css'>-->	
 	<link  href="https://cdn.rawgit.com/fengyuanchen/cropper/v2.0.0/dist/cropper.min.css" rel="stylesheet">
@@ -16,15 +15,10 @@
 	<div id="img-srch" class="img-srch"></div>
 	
 	<script src="bower_components/cropperjs/dist/cropper.min.js"></script>
-	<script type="text/jsx;harmony=true" src="assets/js/bundle.js"></script>
-	<script src="//localhost:1337/livereload.js"></script>
+	<script type="text/jsx;harmony=true" src="build/bundle.js"></script>
+	<!-- <script src="//localhost:1337/livereload.js"></script> -->
 <!-- 	<script src="bower_components/darkroom/build/darkroom.js"></script>
 	<script src="bower_components/darkroom/lib/js/plugins/darkroom.crop.js"></script> -->
-
-	<script type="text/jsx;harmony=true">
-		React.render(<ImgSrch/>, document.getElementById('img-srch'));
-		
-	</script>
 
 </body>
 </html>
